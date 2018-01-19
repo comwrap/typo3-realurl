@@ -222,6 +222,15 @@ class DatabaseCache implements CacheInterface, SingletonInterface {
 
 		$row = null;
 		foreach ($rows as $rowCandidate) {
+			$targetPage = $this->databaseConnection->exec_SELECTgetRows('doktype', 'pages',
+                'uid =' . (int)$rowCandidate['page_id']
+            );
+
+			//check if target page doktype is mount point. If yes - skip this cache entry
+		    if ($targetPage[0]['doktype'] == 7) {
+                continue;
+            }
+
 			$variables = (array)@json_decode($rowCandidate['request_variables'], TRUE);
 			if (is_null($languageId)) {
 				// No language known, we retrieve only the URL with lowest expiration value
